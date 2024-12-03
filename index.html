@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สุ่มธาตุ 12 ตัว</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    .elements {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .element {
+      width: 180px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #000;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .element.correct {
+      background: #c8e6c9;
+    }
+    .input-group {
+      margin-top: 10px;
+    }
+    .input-group input {
+      width: 80%;
+      margin-bottom: 5px;
+      padding: 5px;
+      font-size: 0.9em;
+    }
+    .input-group button {
+      padding: 5px 10px;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>สุ่มธาตุ 12 ตัว</h1>
+    <div class="elements" id="elementsContainer">
+      <!-- ธาตุจะถูกสร้างขึ้นที่นี่ -->
+    </div>
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    // ข้อมูลธาตุ
+    const elements = [
+      { symbol: "H", name_en: "Hydrogen", name_th: "ไฮโดรเจน", group: "A1" },
+      { symbol: "He", name_en: "Helium", name_th: "ฮีเลียม", group: "A8" },
+      { symbol: "Li", name_en: "Lithium", name_th: "ลิเทียม", group: "A1" },
+      { symbol: "Be", name_en: "Beryllium", name_th: "เบริลเลียม", group: "A2" },
+      { symbol: "B", name_en: "Boron", name_th: "โบรอน", group: "A3" },
+      { symbol: "C", name_en: "Carbon", name_th: "คาร์บอน", group: "A4" },
+      { symbol: "N", name_en: "Nitrogen", name_th: "ไนโตรเจน", group: "A5" },
+      { symbol: "O", name_en: "Oxygen", name_th: "ออกซิเจน", group: "A6" },
+      { symbol: "F", name_en: "Fluorine", name_th: "ฟลูออรีน", group: "A7" },
+      { symbol: "Ne", name_en: "Neon", name_th: "นีออน", group: "A8" },
+      { symbol: "Na", name_en: "Sodium", name_th: "โซเดียม", group: "A1" },
+      { symbol: "Mg", name_en: "Magnesium", name_th: "แมกนีเซียม", group: "A2" }
+    ];
+
+    let randomElements = [];
+
+    // ฟังก์ชันสุ่มธาตุ 12 ตัว
+    function generateRandomElements() {
+      randomElements = [];
+      const container = document.getElementById("elementsContainer");
+      container.innerHTML = ""; // ล้างธาตุเก่าออก
+      while (randomElements.length < 12) {
+        const random = elements[Math.floor(Math.random() * elements.length)];
+        if (!randomElements.some(el => el.symbol === random.symbol)) {
+          randomElements.push(random);
+          const elementDiv = document.createElement("div");
+          elementDiv.className = "element";
+          elementDiv.innerHTML = `
+            <strong>${random.symbol}</strong>
+            <div class="input-group">
+              <input type="text" placeholder="ชื่อธาตุ (TH/EN)" data-symbol="${random.symbol}" class="name-input">
+              <input type="text" placeholder="หมู่ (ถ้ามี)" class="group-input">
+              <button onclick="checkAnswer('${random.symbol}')">ส่ง</button>
+            </div>
+          `;
+          container.appendChild(elementDiv);
+        }
+      }
+    }
+
+    // ฟังก์ชันตรวจสอบคำตอบ
+    function checkAnswer(symbol) {
+      const element = randomElements.find(el => el.symbol === symbol);
+      const nameInput = document.querySelector(`input[data-symbol="${symbol}"]`).value.trim().toLowerCase();
+      const groupInput = document.querySelector(`input[data-symbol="${symbol}"] + input.group-input`).value.trim().toUpperCase();
+
+      const isNameCorrect =
+        nameInput === element.name_en.toLowerCase() ||
+        nameInput === element.name_th;
+      const isGroupCorrect =
+        (!element.group.includes("B") && groupInput === element.group) ||
+        element.group.includes("B");
+
+      if (isNameCorrect && isGroupCorrect) {
+        const elementDiv = document.querySelector(`input[data-symbol="${symbol}"]`).closest(".element");
+        elementDiv.classList.add("correct");
+        document.getElementById("feedback").textContent = `✅ ถูกต้องสำหรับธาตุ ${symbol}!`;
+      } else {
+        document.getElementById("feedback").textContent = `❌ ผิด! ลองใหม่สำหรับธาตุ ${symbol}.`;
+      }
+    }
+
+    // สุ่มธาตุครั้งแรก
+    generateRandomElements();
+  </script>
+</body>
+</html>
